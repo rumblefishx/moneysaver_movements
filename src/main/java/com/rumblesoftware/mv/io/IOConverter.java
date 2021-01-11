@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.rumblesoftware.mv.io.input.dto.MovementInputDTO;
 import com.rumblesoftware.mv.io.output.dto.MovementOutputDTO;
 import com.rumblesoftware.mv.model.MovementEntity;
-import com.rumblesoftware.mv.model.MovementID;
 import com.rumblesoftware.mv.utils.DateUtils;
 
 @Component
@@ -37,7 +36,7 @@ public class IOConverter {
 		entity.setCategoryId(input.getCategoryId());
 		entity.setmDescription(input.getmDescription());
 		entity.setMovementDate(dutils.castStringToDate(input.getmDate()));
-		entity.setMovementId(new MovementID(input.getCustomerId()));
+		entity.setCustomerId(input.getCustomerId());
 		entity.setMovementType(MovementType.getMvTypeByCode(input.getmType()));
 		entity.setRecurrentSt(input.getRecurrentSt());
 		return entity;
@@ -46,10 +45,10 @@ public class IOConverter {
 	public MovementOutputDTO castToMovementOutputDTO(MovementEntity entity) {
 		MovementOutputDTO output = new MovementOutputDTO();
 		output.setCategoryId(entity.getCategoryId());
-		output.setCustomerId(entity.getMovementId().getCustomerId());
+		output.setCustomerId(entity.getCustomerId());
 		output.setmDate(dutils.castDateToString(entity.getMovementDate()));
 		output.setmDescription(entity.getmDescription());
-		output.setMovementId(entity.getMovementId().getMovementId());
+		output.setMovementId(entity.getMovementId());
 		output.setmType(entity.getMovementType().getCode());
 		output.setmAmount(entity.getAmount().toString());
 		output.setRecurrentSt(entity.getRecurrentSt());

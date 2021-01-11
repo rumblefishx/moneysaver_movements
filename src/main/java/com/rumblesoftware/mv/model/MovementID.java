@@ -3,25 +3,13 @@ package com.rumblesoftware.mv.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.SequenceGenerator;
 
-@Embeddable
 public class MovementID implements Serializable{
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2320019713707945894L;
 
-	@Column(name="customer_id")
 	private Long customerId;
 	
-	@Column(name="movement_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long movementId;
 	
 	public MovementID() {}

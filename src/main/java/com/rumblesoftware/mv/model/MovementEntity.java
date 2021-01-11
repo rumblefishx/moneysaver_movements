@@ -5,72 +5,83 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.PrePersist;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.rumblesoftware.mv.io.MovementType;
 
-@Entity(name="TMovements")
-public class MovementEntity implements Serializable{
-	
+@Entity(name = "TMovements")
+@IdClass(value = MovementID.class)
+public class MovementEntity implements Serializable {
+
 	private static final String RESPONSIBLE_USER = "MOVEMENTS_MS";
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	@EmbeddedId
-	private MovementID movementId;
-	
+
+	@Id
+	@Column(name = "customer_id")
+	private Long customerId;
+
+	@Id
+	@Column(name = "movement_id")
+	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(generator = "increment")
+	private Long movementId;
+
 	@NotNull
-	@Column(name="category_id")
+	@Column(name = "category_id")
 	private Long categoryId;
-	
+
 	@NotNull
-	@Column(name="amount")
+	@Column(name = "amount")
 	private BigDecimal amount;
-	
+
 	@NotNull
-	@Column(name="movement_type")
+	@Column(name = "movement_type")
 	private MovementType movementType;
-	
+
 	@NotNull
-	@Column(name="movement_date")
+	@Column(name = "movement_date")
 	private Date movementDate;
-	
-	@Column(name="movement_description")
+
+	@Column(name = "movement_description")
 	private String mDescription;
-	
+
 	@NotNull
-	@Column(name="recurrent_status")
+	@Column(name = "recurrent_status")
 	private Integer recurrentSt;
-	
-	@Column(name="creation_date")
+
+	@Column(name = "creation_date")
 	@NotNull
 	private Date creationDate;
-	
+
 	@NotNull
-	@Column(name="last_update_date")
+	@Column(name = "last_update_date")
 	private Date lastUpdateDate;
-	
+
 	@NotNull
-	@Column(name="last_update_made_by")
+	@Column(name = "last_update_made_by")
 	private String lastUpdateMadeBy;
-	
+
 	@PrePersist
 	private void prePersist() {
 		Date now = new Date();
-		
-		if(this.creationDate == null)	
+
+		if (this.creationDate == null)
 			creationDate = now;
 		lastUpdateDate = now;
-		
+
 		lastUpdateMadeBy = RESPONSIBLE_USER;
 	}
-
 
 	public Long getCategoryId() {
 		return categoryId;
@@ -120,39 +131,41 @@ public class MovementEntity implements Serializable{
 		this.recurrentSt = recurrentSt;
 	}
 
-	public MovementID getMovementId() {
+	public Long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
+	}
+
+	public Long getMovementId() {
 		return movementId;
 	}
 
-	public void setMovementId(MovementID movementId) {
+	public void setMovementId(Long movementId) {
 		this.movementId = movementId;
 	}
-
 
 	public static String getResponsibleUser() {
 		return RESPONSIBLE_USER;
 	}
 
-
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-
 
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
-
 	public Date getLastUpdateDate() {
 		return lastUpdateDate;
 	}
 
-
 	public String getLastUpdateMadeBy() {
 		return lastUpdateMadeBy;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -170,7 +183,6 @@ public class MovementEntity implements Serializable{
 		result = prime * result + ((recurrentSt == null) ? 0 : recurrentSt.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -230,8 +242,5 @@ public class MovementEntity implements Serializable{
 			return false;
 		return true;
 	}
-	
-	
 
-	
 }

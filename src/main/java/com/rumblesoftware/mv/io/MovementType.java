@@ -1,7 +1,5 @@
 package com.rumblesoftware.mv.io;
 
-import java.util.Arrays;
-
 public enum MovementType {
 	INCOME(0,"INCOME"),
 	OUTCOME(1,"OUTCOME");
