@@ -1,0 +1,237 @@
+package com.rumblesoftware.mv.model;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.PrePersist;
+import javax.validation.constraints.NotNull;
+
+import com.rumblesoftware.mv.io.MovementType;
+
+@Entity(name="TMovements")
+public class MovementEntity implements Serializable{
+	
+	private static final String RESPONSIBLE_USER = "MOVEMENTS_MS";
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@EmbeddedId
+	private MovementID movementId;
+	
+	@NotNull
+	@Column(name="category_id")
+	private Long categoryId;
+	
+	@NotNull
+	@Column(name="amount")
+	private BigDecimal amount;
+	
+	@NotNull
+	@Column(name="movement_type")
+	private MovementType movementType;
+	
+	@NotNull
+	@Column(name="movement_date")
+	private Date movementDate;
+	
+	@Column(name="movement_description")
+	private String mDescription;
+	
+	@NotNull
+	@Column(name="recurrent_status")
+	private Integer recurrentSt;
+	
+	@Column(name="creation_date")
+	@NotNull
+	private Date creationDate;
+	
+	@NotNull
+	@Column(name="last_update_date")
+	private Date lastUpdateDate;
+	
+	@NotNull
+	@Column(name="last_update_made_by")
+	private String lastUpdateMadeBy;
+	
+	@PrePersist
+	private void prePersist() {
+		Date now = new Date();
+		
+		if(this.creationDate == null)	
+			creationDate = now;
+		lastUpdateDate = now;
+		
+		lastUpdateMadeBy = RESPONSIBLE_USER;
+	}
+
+
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public MovementType getMovementType() {
+		return movementType;
+	}
+
+	public void setMovementType(MovementType movementType) {
+		this.movementType = movementType;
+	}
+
+	public Date getMovementDate() {
+		return movementDate;
+	}
+
+	public void setMovementDate(Date movementDate) {
+		this.movementDate = movementDate;
+	}
+
+	public String getmDescription() {
+		return mDescription;
+	}
+
+	public void setmDescription(String mDescription) {
+		this.mDescription = mDescription;
+	}
+
+	public Integer getRecurrentSt() {
+		return recurrentSt;
+	}
+
+	public void setRecurrentSt(Integer recurrentSt) {
+		this.recurrentSt = recurrentSt;
+	}
+
+	public MovementID getMovementId() {
+		return movementId;
+	}
+
+	public void setMovementId(MovementID movementId) {
+		this.movementId = movementId;
+	}
+
+
+	public static String getResponsibleUser() {
+		return RESPONSIBLE_USER;
+	}
+
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+
+	public Date getLastUpdateDate() {
+		return lastUpdateDate;
+	}
+
+
+	public String getLastUpdateMadeBy() {
+		return lastUpdateMadeBy;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((amount == null) ? 0 : amount.hashCode());
+		result = prime * result + ((categoryId == null) ? 0 : categoryId.hashCode());
+		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((lastUpdateDate == null) ? 0 : lastUpdateDate.hashCode());
+		result = prime * result + ((lastUpdateMadeBy == null) ? 0 : lastUpdateMadeBy.hashCode());
+		result = prime * result + ((mDescription == null) ? 0 : mDescription.hashCode());
+		result = prime * result + ((movementDate == null) ? 0 : movementDate.hashCode());
+		result = prime * result + ((movementId == null) ? 0 : movementId.hashCode());
+		result = prime * result + ((movementType == null) ? 0 : movementType.hashCode());
+		result = prime * result + ((recurrentSt == null) ? 0 : recurrentSt.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MovementEntity other = (MovementEntity) obj;
+		if (amount == null) {
+			if (other.amount != null)
+				return false;
+		} else if (!amount.equals(other.amount))
+			return false;
+		if (categoryId == null) {
+			if (other.categoryId != null)
+				return false;
+		} else if (!categoryId.equals(other.categoryId))
+			return false;
+		if (creationDate == null) {
+			if (other.creationDate != null)
+				return false;
+		} else if (!creationDate.equals(other.creationDate))
+			return false;
+		if (lastUpdateDate == null) {
+			if (other.lastUpdateDate != null)
+				return false;
+		} else if (!lastUpdateDate.equals(other.lastUpdateDate))
+			return false;
+		if (lastUpdateMadeBy == null) {
+			if (other.lastUpdateMadeBy != null)
+				return false;
+		} else if (!lastUpdateMadeBy.equals(other.lastUpdateMadeBy))
+			return false;
+		if (mDescription == null) {
+			if (other.mDescription != null)
+				return false;
+		} else if (!mDescription.equals(other.mDescription))
+			return false;
+		if (movementDate == null) {
+			if (other.movementDate != null)
+				return false;
+		} else if (!movementDate.equals(other.movementDate))
+			return false;
+		if (movementId == null) {
+			if (other.movementId != null)
+				return false;
+		} else if (!movementId.equals(other.movementId))
+			return false;
+		if (movementType != other.movementType)
+			return false;
+		if (recurrentSt == null) {
+			if (other.recurrentSt != null)
+				return false;
+		} else if (!recurrentSt.equals(other.recurrentSt))
+			return false;
+		return true;
+	}
+	
+	
+
+	
+}
