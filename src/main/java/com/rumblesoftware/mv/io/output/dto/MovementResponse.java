@@ -30,6 +30,10 @@ public class MovementResponse implements Serializable {
 		this.response = response;
 	}
 
+	public List<String> getErrorMsgs() {
+		return errorMsgs;
+	}
+
 	
 	
 }

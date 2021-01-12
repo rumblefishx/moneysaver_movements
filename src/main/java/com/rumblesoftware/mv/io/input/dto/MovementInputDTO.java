@@ -2,6 +2,11 @@ package com.rumblesoftware.mv.io.input.dto;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
+
+import com.rumblesoftware.mv.io.validation.MoneyInStringVal;
+
+@Valid
 public class MovementInputDTO implements Serializable {
 
 	/**
@@ -11,6 +16,7 @@ public class MovementInputDTO implements Serializable {
 	
 	private long customerId;
 
+	@MoneyInStringVal(decimals = 2)
 	private String mAmount;
 	
 	private String mDate;
