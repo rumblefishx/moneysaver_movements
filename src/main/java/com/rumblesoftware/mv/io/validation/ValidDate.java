@@ -10,10 +10,9 @@ import javax.validation.Payload;
 
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MoneyInStringValidation.class)
-public @interface MoneyInStringVal {
-	int decimals() default 2;
-    String message() default "{movement.add.amount.not.valid}";
+@Constraint(validatedBy = ValidDateValidator.class)
+public @interface ValidDate {
+    String message() default "{movements.input.data.invalid}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
