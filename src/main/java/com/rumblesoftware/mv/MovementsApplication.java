@@ -43,11 +43,16 @@ public class MovementsApplication {
 		slr.setDefaultLocale(Locale.ENGLISH);
 		return slr;
 	}
-	
+
+	/**
+	 * Create an instance of a LocalValidatorFactoryBean managed by Spring Context.
+	 * This way is possible to use it in order to verify message contents during Junit validations
+	 * @return an Instance of a LocalValidatorFactoryBean
+	 */
 	@Bean
-	public LocalValidatorFactoryBean getValidator() {
-	    LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
-	    bean.setValidationMessageSource(messageSource());
-	    return bean;
+	public LocalValidatorFactoryBean validator() {
+		LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+		bean.setValidationMessageSource(messageSource());
+		return bean;
 	}
 }
