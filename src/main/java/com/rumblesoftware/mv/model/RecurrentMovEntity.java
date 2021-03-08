@@ -17,9 +17,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.rumblesoftware.mv.io.MovementType;
 
-@Entity(name = "TMovements")
-@IdClass(value = MovementID.class)
-public class MovementEntity implements Serializable {
+@Entity(name = "TRecurrent_Mov")
+@IdClass(value = RecurrentMovID.class)
+public class RecurrentMovEntity implements Serializable {
 
 	private static final String RESPONSIBLE_USER = "MOVEMENTS_MS";
 
@@ -55,7 +55,7 @@ public class MovementEntity implements Serializable {
 	private Date movementDate;
 
 	@Column(name = "movement_description")
-	@Size(max=120)
+	@Size(max=15)
 	private String mDescription;
 
 	@Column(name = "creation_date")
@@ -182,7 +182,7 @@ public class MovementEntity implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MovementEntity other = (MovementEntity) obj;
+		RecurrentMovEntity other = (RecurrentMovEntity) obj;
 		if (amount == null) {
 			if (other.amount != null)
 				return false;

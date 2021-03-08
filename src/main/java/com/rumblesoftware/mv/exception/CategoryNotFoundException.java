@@ -2,7 +2,7 @@ package com.rumblesoftware.mv.exception;
 
 public class CategoryNotFoundException extends ValidationException {
 	
-	private static final String DFT_MSG = "ms.categories.id.notfound";
+	private static final String DFT_MSG = "movement.categories.id.notfound";
 
 	/**
 	 * 

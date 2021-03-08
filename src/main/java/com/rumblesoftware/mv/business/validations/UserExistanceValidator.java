@@ -1,4 +1,4 @@
-package com.rumblesoftware.mv.business.impl;
+package com.rumblesoftware.mv.business.validations;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -8,8 +8,15 @@ public class CandidateToValidationData {
 		this.customerId = customerId;
 	}
 	
+	public CandidateToValidationData(Long customerId,Long categoryId,Long movementId) {
+		this.categoryId = categoryId;
+		this.customerId = customerId;
+		this.movementId = movementId;
+	}
+	
 	private Long customerId;
 	private Long categoryId;
+	private Long movementId;
 	
 	public Long getCustomerId() {
 		return customerId;
@@ -22,6 +29,12 @@ public class CandidateToValidationData {
 	}
 	public void setCategoryId(Long categoryId) {
 		this.categoryId = categoryId;
+	}
+	public Long getMovementId() {
+		return movementId;
+	}
+	public void setMovementId(Long movementId) {
+		this.movementId = movementId;
 	}
 	
 	

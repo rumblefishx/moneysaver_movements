@@ -1,4 +1,4 @@
-package com.rumblesoftware.mv.business.impl;
+package com.rumblesoftware.mv.business.validations;
 
 import org.springframework.stereotype.Component;
 

@@ -2,26 +2,27 @@ package com.rumblesoftware.mv.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
+public class RecurrentMovID implements Serializable{
 
-public class MovementID implements Serializable{
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6832716309942234377L;
 
-	private static final long serialVersionUID = 2320019713707945894L;
-
-	private Long customerId;
+private Long customerId;
 	
 	private Long categoryId;
 	
 	private Long movementId;
 	
-	public MovementID() {}
+	public RecurrentMovID() {}
 
-	public MovementID(Long customerId) {
+	public RecurrentMovID(Long customerId) {
 		super();
 		this.customerId = customerId;
 	}
 
-	public MovementID(Long customerId, Long movementId,Long categoryId) {
+	public RecurrentMovID(Long customerId, Long movementId,Long categoryId) {
 		super();
 		this.customerId = customerId;
 		this.movementId = movementId;
@@ -51,7 +52,4 @@ public class MovementID implements Serializable{
 	public void setCategoryId(Long categoryId) {
 		this.categoryId = categoryId;
 	}
-
-
-	
 }

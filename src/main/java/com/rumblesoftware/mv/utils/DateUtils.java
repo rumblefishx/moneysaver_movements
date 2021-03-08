@@ -1,6 +1,7 @@
 package com.rumblesoftware.mv.utils;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -29,10 +30,10 @@ public class DateUtils {
 	private Logger log = LogManager.getLogger(DateUtils.class);
 	
 	private static final String DATE_EXCEPTION_MSG = 
-			"date.to.string.cast.exception";
+			"movement.date.to.string.cast.exception";
 	
 	private static final String DATE_CONVERSION_MSG_PATTERN = 
-			"date.to.string.cast.error.log";
+			"movement.date.to.string.cast.error.log";
 	
 	public Date castStringToDate(String dateStr) {
 		

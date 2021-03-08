@@ -2,7 +2,7 @@ package com.rumblesoftware.mv.exception;
 
 public class MovementNotFoundException extends ValidationException {
 	
-	private static final String DFT_MSG = "ms.movements.mv.notfound";
+	private static final String DFT_MSG = "movement.movements.mv.notfound";
 
 	/**
 	 * 

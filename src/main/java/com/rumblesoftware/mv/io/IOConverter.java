@@ -1,13 +1,16 @@
 package com.rumblesoftware.mv.io;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.rumblesoftware.mv.io.input.dto.MovementInputDTO;
+import com.rumblesoftware.mv.io.input.dto.MovementPatchDTO;
 import com.rumblesoftware.mv.io.output.dto.MovementOutputDTO;
 import com.rumblesoftware.mv.model.MovementEntity;
+import com.rumblesoftware.mv.model.RecurrentMovEntity;
 import com.rumblesoftware.mv.utils.DateUtils;
 
 @Component
@@ -38,7 +41,6 @@ public class IOConverter {
 		entity.setMovementDate(dutils.castStringToDate(input.getmDate()));
 		entity.setCustomerId(input.getCustomerId());
 		entity.setMovementType(MovementType.getMvTypeByCode(input.getmType()));
-		entity.setRecurrentSt(input.getRecurrentSt());
 		return entity;
 	}
 	
@@ -51,7 +53,40 @@ public class IOConverter {
 		output.setMovementId(entity.getMovementId());
 		output.setmType(entity.getMovementType().getCode());
 		output.setmAmount(entity.getAmount().toString());
-		output.setRecurrentSt(entity.getRecurrentSt());
 		return output;
 	}
+	
+	public MovementEntity transferDataToUpdate(MovementEntity target, MovementPatchDTO input) {
+						
+		if(input.getmAmount() != null )
+			target.setAmount(new BigDecimal(input.getmAmount()));		
+		
+		if(input.getmDescription() != null && input.getmDescription().trim().length() > 0)
+			target.setmDescription(input.getmDescription());
+		
+		if(input.getmDate() != null)
+			target.setMovementDate(dutils.castStringToDate(input.getmDate()));		
+		
+		if(input.getmType()  != null)
+			target.setMovementType(MovementType.getMvTypeByCode(input.getmType()));
+		
+		return target;
+	}
+	
+	public RecurrentMovEntity MovEntityToRecurrent(MovementEntity entity) {
+		
+		RecurrentMovEntity rm = new RecurrentMovEntity();
+		
+		rm.setAmount(entity.getAmount());
+		rm.setCategoryId(entity.getCategoryId());
+		rm.setCustomerId(entity.getCustomerId());
+		rm.setmDescription(entity.getmDescription());
+		rm.setMovementDate(entity.getMovementDate());
+		rm.setMovementId(entity.getMovementId());
+		rm.setMovementType(entity.getMovementType());
+		
+		return rm;
+	}
+	
+	
 }
