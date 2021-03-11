@@ -14,8 +14,13 @@ import com.rumblesoftware.mv.model.MovementID;
 public interface MovementsRepository extends JpaRepository<MovementEntity, MovementID>{
 
 	@Query(value = "select m from TMovements m where m.categoryId = :catId and m.customerId = :custId and m.movementId = :movId")
-	public Optional<MovementEntity> findEntityByCatAndCustIds(
+	public Optional<MovementEntity> findEntityByLogicalIds(
 			@Param(value = "catId") Long catId,
+			@Param(value = "custId") Long custId,
+			@Param(value = "movId") Long movId);
+	
+	@Query(value = "select m from TMovements m where m.categoryId = :catId and m.customerId = :custId and m.movementId = :movId")
+	public Optional<MovementEntity> findEntityByCustAndMovId(
 			@Param(value = "custId") Long custId,
 			@Param(value = "movId") Long movId);
 }

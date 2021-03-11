@@ -13,8 +13,8 @@ public interface MovemenstService {
 	
 	public MovementOutputDTO addMovement(MovementInputDTO input) throws InternalValidationErrorException, ValidationException;
 	public MovementOutputDTO updMovement(MovementPatchDTO input) throws InternalValidationErrorException, ValidationException;
-	public MovementOutputDTO delMovement(Long customerId,Long categoryId,Long MovementId) throws InternalValidationErrorException, ValidationException;
-	public MovementOutputDTO findMovement(Long customerId,Long categoryId,Long MovementId);
+	public MovementOutputDTO delMovement(Long customerId,Long MovementId) throws InternalValidationErrorException, ValidationException;
+	public MovementOutputDTO findMovement(Long customerId,Long MovementId);
 	public MovementOutputDTO MovementsFromCustomer(Long customerId,Long categoryId,Long MovementId, MovementType type, Date dtInit, Date dtEnd);
 
 }

@@ -10,8 +10,6 @@ public class MovementID implements Serializable{
 
 	private Long customerId;
 	
-	private Long categoryId;
-	
 	private Long movementId;
 	
 	public MovementID() {}
@@ -25,7 +23,6 @@ public class MovementID implements Serializable{
 		super();
 		this.customerId = customerId;
 		this.movementId = movementId;
-		this.categoryId = categoryId;
 	}
 
 	public Long getCustomerId() {
@@ -43,15 +40,5 @@ public class MovementID implements Serializable{
 	public void setMovementId(Long movementId) {
 		this.movementId = movementId;
 	}
-
-	public Long getCategoryId() {
-		return categoryId;
-	}
-
-	public void setCategoryId(Long categoryId) {
-		this.categoryId = categoryId;
-	}
-
-
 	
 }

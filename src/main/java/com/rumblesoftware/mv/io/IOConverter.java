@@ -1,7 +1,6 @@
 package com.rumblesoftware.mv.io;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,20 @@ public class IOConverter {
 	private DateUtils dutils;
 
 	public MovementOutputDTO castToMovementOutputDTO(MovementInputDTO input) {
+		MovementOutputDTO output = new MovementOutputDTO();
+		
+		output.setCategoryId(input.getCategoryId());
+		output.setCustomerId(input.getCustomerId());
+		output.setmDate(input.getmDate());
+		output.setmDescription(input.getmDescription());
+		output.setmType(input.getmType());
+		output.setmAmount(input.getmAmount());
+		output.setRecurrentSt(input.getRecurrentSt());
+		
+		return output;
+	}
+	
+	public MovementOutputDTO castToMovementOutputDTO(MovementPatchDTO input) {
 		MovementOutputDTO output = new MovementOutputDTO();
 		
 		output.setCategoryId(input.getCategoryId());
@@ -86,6 +99,32 @@ public class IOConverter {
 		rm.setMovementType(entity.getMovementType());
 		
 		return rm;
+	}
+	
+	public RecurrentMovEntity updateRecurrentMovEntity(
+			RecurrentMovEntity destination,
+			MovementPatchDTO source) {
+		
+		if(source.getmAmount() != null && source.getmAmount().trim().length() > 0) {
+			destination.setAmount(new BigDecimal(source.getmAmount()));
+		}
+
+		if(source.getmDescription() != null && source.getmDescription().trim().length() > 0) 
+			destination.setmDescription(source.getmDescription());
+		
+		if(source.getmDate() != null) 
+			destination.setMovementDate(dutils.castStringToDate(source.getmDate()));
+		
+		if(source.getmType() != null)			
+			destination.setMovementType(MovementType.getMvTypeByCode(source.getmType()));
+
+		if(source.getCategoryId() != null)
+			destination.setCategoryId(source.getCategoryId());
+		
+		destination.setMovementId(source.getMovementId());
+		destination.setCustomerId(source.getCustomerId());
+		
+		return destination;
 	}
 	
 	

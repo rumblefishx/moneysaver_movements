@@ -38,7 +38,6 @@ public class MovementEntity implements Serializable {
 	@GeneratedValue(generator = "increment")
 	private Long movementId;
 
-	@Id
 	@Column(name = "category_id")
 	private Long categoryId;
 

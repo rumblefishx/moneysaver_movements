@@ -26,11 +26,17 @@ public class MovementExistanceValidator extends BaseValidator<CandidateToValidat
 	public void validate(CandidateToValidationData input) throws InternalValidationErrorException, ValidationException {
 		log.debug("[Validation Layer] Checking if the movement really exists...");
 		
-		Optional<MovementEntity> mov = 
-				repository.findEntityByCatAndCustIds(
-						input.getCategoryId(), 
-						input.getCustomerId(), 
-						input.getMovementId());
+		Optional<MovementEntity> mov = null;
+		
+		try {
+			mov = 	repository.findEntityByLogicalIds(
+							input.getCategoryId(), 
+							input.getCustomerId(), 
+							input.getMovementId());
+		} catch(Exception e) {
+			log.error("[Validation Layer] Failure during movement existance validation.");
+			throw new InternalValidationErrorException();
+		}
 		
 		if(mov.isEmpty()) {
 			log.debug("[Validation Layer] Moevement hasn't been found");

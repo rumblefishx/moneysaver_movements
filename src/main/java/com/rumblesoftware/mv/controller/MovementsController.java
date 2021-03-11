@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +19,10 @@ import com.rumblesoftware.mv.business.MovemenstService;
 import com.rumblesoftware.mv.exception.DataNotFoundException;
 import com.rumblesoftware.mv.exception.InternalValidationErrorException;
 import com.rumblesoftware.mv.exception.PersistenceInternalFailureException;
-import com.rumblesoftware.mv.exception.RecMovOutOfTimeException;
 import com.rumblesoftware.mv.exception.ValidationException;
 import com.rumblesoftware.mv.io.IOConverter;
 import com.rumblesoftware.mv.io.input.dto.MovementInputDTO;
+import com.rumblesoftware.mv.io.input.dto.MovementPatchDTO;
 import com.rumblesoftware.mv.io.output.dto.MovementOutputDTO;
 import com.rumblesoftware.mv.io.output.dto.MovementResponse;
 import com.rumblesoftware.mv.utils.PostOfficer;
@@ -66,7 +65,7 @@ public class MovementsController {
 		
 		try {			
 			response.setResponse(service.addMovement(mv));
-		} catch(ValidationException|RecMovOutOfTimeException exception) {
+		} catch(ValidationException exception) {
 			return getResponseAfterFailure(converter.castToMovementOutputDTO(mv),exception,HttpStatus.BAD_REQUEST);
 		} catch(PersistenceInternalFailureException|InternalValidationErrorException exception) {
 			return getResponseAfterFailure(converter.castToMovementOutputDTO(mv),exception,HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,18 +78,49 @@ public class MovementsController {
 		
 	}
 	
-	@RequestMapping(value = "/movement/{movementId}/category/{categoryId}/customer/{customerId}"
+	@RequestMapping(value = "/movement",method=RequestMethod.PATCH)
+	public ResponseEntity<MovementResponse> updMovement(@Valid @RequestBody MovementPatchDTO mv,BindingResult br){
+		
+		log.debug("[Controller Layer] - upd movement endpoint - receiving request...");
+		
+		MovementResponse response = new MovementResponse();
+		
+		if(br.hasErrors()) {
+			log.debug("[Controller Layer] - upd movement endpoint - delivering input validation errors...");
+			br.getAllErrors().forEach(e -> response.addErrorMsg(e.getDefaultMessage()));
+			response.setResponse(converter.castToMovementOutputDTO(mv));
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		log.debug("[Controller Layer] - upd movement endpoint - calling service layer");
+		
+		
+		try {			
+			response.setResponse(service.updMovement(mv));
+		} catch(ValidationException exception) {
+			return getResponseAfterFailure(converter.castToMovementOutputDTO(mv),exception,HttpStatus.BAD_REQUEST);
+		} catch(PersistenceInternalFailureException|InternalValidationErrorException exception) {
+			return getResponseAfterFailure(converter.castToMovementOutputDTO(mv),exception,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		
+		log.debug("[Controller Layer] - upd movement endpoint - return result");
+		
+		return ResponseEntity.ok(response);
+		
+	}
+	
+	@RequestMapping(value = "/movement/{movementId}/customer/{customerId}"
 			,method=RequestMethod.GET)
 	public ResponseEntity<MovementResponse> findMovByIdKeys(
 			@PathVariable Long customerId,
-			@PathVariable Long categoryId,
 			@PathVariable Long movementId){
 		
 		MovementResponse response = new MovementResponse();
 		MovementOutputDTO output = null;
 		
 		try {
-			output = service.findMovement(customerId, categoryId, movementId);
+			output = service.findMovement(customerId,movementId);
 		} catch(DataNotFoundException e) {
 			response.addErrorMsg(e.getMessage());
 			response.setResponse(new MovementOutputDTO());
@@ -114,7 +144,9 @@ public class MovementsController {
 		if(exception.getMessage().contains(APP_ERR_PREFIX_CODE)) 
 			msgCode = exception.getMessage();
 
-		exception.printStackTrace();				
+		if(httpStatus.equals(HttpStatus.INTERNAL_SERVER_ERROR))
+			exception.printStackTrace();	
+		
 		response.setResponse(output);
 		response.addErrorMsg(po.getMessage(msgCode));
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
