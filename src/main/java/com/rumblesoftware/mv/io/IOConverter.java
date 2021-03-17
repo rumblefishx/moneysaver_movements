@@ -69,6 +69,12 @@ public class IOConverter {
 		return output;
 	}
 	
+	public MovementOutputDTO castToMovementOutputDTO(MovementEntity entity,Integer statusRecCode) {
+		MovementOutputDTO output = castToMovementOutputDTO(entity);
+		output.setRecurrentSt(statusRecCode);
+		return output;
+	}
+	
 	public MovementEntity transferDataToUpdate(MovementEntity target, MovementPatchDTO input) {
 						
 		if(input.getmAmount() != null )
@@ -95,8 +101,8 @@ public class IOConverter {
 		rm.setCustomerId(entity.getCustomerId());
 		rm.setmDescription(entity.getmDescription());
 		rm.setMovementDate(entity.getMovementDate());
-		rm.setMovementId(entity.getMovementId());
 		rm.setMovementType(entity.getMovementType());
+		rm.setActivityStatus(1);
 		
 		return rm;
 	}
@@ -121,8 +127,11 @@ public class IOConverter {
 		if(source.getCategoryId() != null)
 			destination.setCategoryId(source.getCategoryId());
 		
-		destination.setMovementId(source.getMovementId());
 		destination.setCustomerId(source.getCustomerId());
+		
+		if(source.getRecurrentSt() != null) {
+			destination.setActivityStatus(source.getRecurrentSt());
+		}
 		
 		return destination;
 	}

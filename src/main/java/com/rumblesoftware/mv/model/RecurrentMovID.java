@@ -10,8 +10,6 @@ public class RecurrentMovID implements Serializable{
 	private static final long serialVersionUID = 6832716309942234377L;
 
 	private Long customerId;
-		
-	private Long movementId;
 	
 	private Long recurrentMovId;
 	
@@ -22,10 +20,9 @@ public class RecurrentMovID implements Serializable{
 		this.customerId = customerId;
 	}
 
-	public RecurrentMovID(Long customerId, Long movementId,Long categoryId,Long recurrentMovId) {
+	public RecurrentMovID(Long customerId, Long recurrentMovId) {
 		super();
 		this.customerId = customerId;
-		this.movementId = movementId;
 		this.recurrentMovId = recurrentMovId;
 	}
 
@@ -37,13 +34,6 @@ public class RecurrentMovID implements Serializable{
 		this.customerId = customerId;
 	}
 
-	public Long getMovementId() {
-		return movementId;
-	}
-
-	public void setMovementId(Long movementId) {
-		this.movementId = movementId;
-	}
 
 	public Long getRecurrentMovId() {
 		return recurrentMovId;

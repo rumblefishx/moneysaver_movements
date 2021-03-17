@@ -60,8 +60,7 @@ public class MovementsController {
 			return ResponseEntity.badRequest().body(response);
 		}
 		
-		log.debug("[Controller Layer] - add movement endpoint - calling service layer");
-		
+		log.debug("[Controller Layer] - add movement endpoint - calling service layer");		
 		
 		try {			
 			response.setResponse(service.addMovement(mv));
@@ -149,7 +148,7 @@ public class MovementsController {
 		
 		response.setResponse(output);
 		response.addErrorMsg(po.getMessage(msgCode));
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		return ResponseEntity.status(httpStatus).body(response);
 	}
 	
 

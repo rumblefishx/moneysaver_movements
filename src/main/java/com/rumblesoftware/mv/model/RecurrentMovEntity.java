@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -33,10 +34,6 @@ public class RecurrentMovEntity implements Serializable {
 	private Long customerId;
 
 	@Id
-	@Column(name = "movement_id")
-	private Long movementId;
-
-	@Id
 	@Column(name = "rec_mov_Id")
 	@GenericGenerator(name = "rec_increment", strategy = "increment")
 	@GeneratedValue(generator = "rec_increment")
@@ -57,8 +54,7 @@ public class RecurrentMovEntity implements Serializable {
 	@Column(name = "movement_date")
 	private Date movementDate;
 
-	@Column(name = "movement_description")
-	@Size(max=15)
+	@Column(name = "movement_description",length = 15)
 	private String mDescription;
 
 	@Column(name = "creation_date")
@@ -77,6 +73,7 @@ public class RecurrentMovEntity implements Serializable {
 	private Integer activityStatus;
 
 	@PrePersist
+	@PreUpdate
 	private void prePersist() {
 		Date now = new Date();
 
@@ -138,14 +135,6 @@ public class RecurrentMovEntity implements Serializable {
 		this.customerId = customerId;
 	}
 
-	public Long getMovementId() {
-		return movementId;
-	}
-
-	public void setMovementId(Long movementId) {
-		this.movementId = movementId;
-	}
-
 	public static String getResponsibleUser() {
 		return RESPONSIBLE_USER;
 	}
@@ -182,4 +171,6 @@ public class RecurrentMovEntity implements Serializable {
 		this.activityStatus = activityStatus;
 	}	
 
+	
+	
 }

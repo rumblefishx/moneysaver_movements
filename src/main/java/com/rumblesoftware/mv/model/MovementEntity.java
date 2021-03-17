@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -40,6 +41,9 @@ public class MovementEntity implements Serializable {
 
 	@Column(name = "category_id")
 	private Long categoryId;
+	
+	@Column(name= "replication_source")
+	private Long replicationSource;
 
 	@NotNull
 	@Column(name = "amount")
@@ -70,6 +74,7 @@ public class MovementEntity implements Serializable {
 	private String lastUpdateMadeBy;
 
 	@PrePersist
+	@PreUpdate
 	private void prePersist() {
 		Date now = new Date();
 
@@ -156,82 +161,13 @@ public class MovementEntity implements Serializable {
 		return lastUpdateMadeBy;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((amount == null) ? 0 : amount.hashCode());
-		result = prime * result + ((categoryId == null) ? 0 : categoryId.hashCode());
-		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result + ((customerId == null) ? 0 : customerId.hashCode());
-		result = prime * result + ((lastUpdateDate == null) ? 0 : lastUpdateDate.hashCode());
-		result = prime * result + ((lastUpdateMadeBy == null) ? 0 : lastUpdateMadeBy.hashCode());
-		result = prime * result + ((mDescription == null) ? 0 : mDescription.hashCode());
-		result = prime * result + ((movementDate == null) ? 0 : movementDate.hashCode());
-		result = prime * result + ((movementId == null) ? 0 : movementId.hashCode());
-		result = prime * result + ((movementType == null) ? 0 : movementType.hashCode());
-		return result;
+	public Long getReplicationSource() {
+		return replicationSource;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MovementEntity other = (MovementEntity) obj;
-		if (amount == null) {
-			if (other.amount != null)
-				return false;
-		} else if (!amount.equals(other.amount))
-			return false;
-		if (categoryId == null) {
-			if (other.categoryId != null)
-				return false;
-		} else if (!categoryId.equals(other.categoryId))
-			return false;
-		if (creationDate == null) {
-			if (other.creationDate != null)
-				return false;
-		} else if (!creationDate.equals(other.creationDate))
-			return false;
-		if (customerId == null) {
-			if (other.customerId != null)
-				return false;
-		} else if (!customerId.equals(other.customerId))
-			return false;
-		if (lastUpdateDate == null) {
-			if (other.lastUpdateDate != null)
-				return false;
-		} else if (!lastUpdateDate.equals(other.lastUpdateDate))
-			return false;
-		if (lastUpdateMadeBy == null) {
-			if (other.lastUpdateMadeBy != null)
-				return false;
-		} else if (!lastUpdateMadeBy.equals(other.lastUpdateMadeBy))
-			return false;
-		if (mDescription == null) {
-			if (other.mDescription != null)
-				return false;
-		} else if (!mDescription.equals(other.mDescription))
-			return false;
-		if (movementDate == null) {
-			if (other.movementDate != null)
-				return false;
-		} else if (!movementDate.equals(other.movementDate))
-			return false;
-		if (movementId == null) {
-			if (other.movementId != null)
-				return false;
-		} else if (!movementId.equals(other.movementId))
-			return false;
-		if (movementType != other.movementType)
-			return false;
-		return true;
+	public void setReplicationSource(Long replicationSource) {
+		this.replicationSource = replicationSource;
 	}
-
 	
-
+	
 }

@@ -1,18 +1,19 @@
 package com.rumblesoftware.mv.business.impl;
 
-import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.isRecurrentMvInTheSameMonth;
+import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.NewRecurrentMvInTheSameMonthCheck;
+import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.RecurrentMvnUpdatableCheck;
 import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.isRecurrentAnOutcomeMovement;
 
 import java.util.Date;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.rumblesoftware.mv.business.MovemenstService;
 import com.rumblesoftware.mv.business.validations.CategoryExistanceValidator;
@@ -35,7 +36,7 @@ import com.rumblesoftware.mv.repository.RecurrentMovementRepository;
 import com.rumblesoftware.mv.utils.DateUtils;
 
 @Service
-@Transactional
+
 public class MovementsServiceImpl implements MovemenstService{
 
 	@Autowired
@@ -62,14 +63,16 @@ public class MovementsServiceImpl implements MovemenstService{
 	private DateUtils dtUtils;
 	
 	@Override
+	@Transactional
 	public MovementOutputDTO addMovement(MovementInputDTO input) {		
 		RecurrentMovEntity recMov = null;
 		
 		log.debug("[Service Layer] - addMovement - starting validations...");
 		
 		//  STEP - 1 Execute validations
-		isRecurrentMvInTheSameMonth(input.getRecurrentSt(),dtUtils.castStringToDate(input.getmDate()));		
+		NewRecurrentMvInTheSameMonthCheck(input.getRecurrentSt(),dtUtils.castStringToDate(input.getmDate()));		
 		isRecurrentAnOutcomeMovement(input.getRecurrentSt(), input.getmType());
+		
 		custVal.setNextVal(catVal);
 		custVal.validate(new CandidateToValidationData(input.getCustomerId(),input.getCategoryId()));
 		log.debug("[Service Layer] - addMovement - validation process finished!");
@@ -78,7 +81,7 @@ public class MovementsServiceImpl implements MovemenstService{
 		log.debug("[Service Layer] - addMovement - saving data in the database...");
 		MovementEntity entity = converter.castToEntity(input);				
 		
-		if(input.getRecurrentSt() == 1)
+		if(input.getRecurrentSt() == 1) 
 			recMov = converter.MovEntityToRecurrent(entity);
 		
 		try {
@@ -88,7 +91,7 @@ public class MovementsServiceImpl implements MovemenstService{
 			throw new PersistenceInternalFailureException();
 		}
 		
-		return converter.castToMovementOutputDTO(entity);
+		return converter.castToMovementOutputDTO(entity,input.getRecurrentSt());
 	}
 
 	@Override
@@ -96,53 +99,56 @@ public class MovementsServiceImpl implements MovemenstService{
 		
 		log.debug("[Service Layer] - updMovement - searching movement...");
 		
-		MovementEntity movToUpdate = null;
-		RecurrentMovEntity recMov = null;
-		
-		isRecurrentMvInTheSameMonth(input.getRecurrentSt(),dtUtils.castStringToDate(input.getmDate()));		
+		NewRecurrentMvInTheSameMonthCheck(input.getRecurrentSt(),dtUtils.castStringToDate(input.getmDate()));		
 		isRecurrentAnOutcomeMovement(input.getRecurrentSt(), input.getmType());
 		
-		// STEP 1 - Find movement to be updated
+		MovementOutputDTO output = null;
+		
 		try {
-			movToUpdate =	
-					repository.findEntityByLogicalIds(
-							input.getCategoryId(), 
-							input.getCustomerId(), 
-							input.getMovementId()).orElse(null);
-			
-			if(movToUpdate == null)
-				throw new MovementNotFoundException();
-				
-			recMov = 
-					rmRepository.findByCustAndMovIds(
-					movToUpdate.getCustomerId(), 
-					movToUpdate.getMovementId()).orElse(null);			
-
+			output = updatePersistenceTransactionalFlow(input);
 		} catch(MovementNotFoundException e) {
 			throw e;
 		} catch(Exception e) {
-			log.error("[Service Layer] - updMovement - Failure during movement search...");
 			throw new PersistenceInternalFailureException();
-		}			
+		}
+		
+		return output;
+	}
 
+	private MovementOutputDTO updatePersistenceTransactionalFlow(MovementPatchDTO input) {
+		MovementEntity movToUpdate = null;
+		RecurrentMovEntity recMov = null;
+				
+		// STEP 1 - Find movement to be updated
+		movToUpdate =	
+			repository.findEntityByLogicalIds(
+					input.getCategoryId(), 
+					input.getCustomerId(), 
+					input.getMovementId()).orElse(null);
+		
+		if(movToUpdate == null)
+			throw new MovementNotFoundException();
+			
+		if(movToUpdate.getReplicationSource() != null)
+			recMov = 
+					rmRepository.findByCustAndMovIds(
+					movToUpdate.getCustomerId(), 
+					movToUpdate.getReplicationSource()).orElse(null);				
+		
 		movToUpdate = converter.transferDataToUpdate(movToUpdate, input);		
 				
 		if(recMov != null) {
+			//Check if the if the movement is updatable
+			RecurrentMvnUpdatableCheck(recMov);
+			
 			recMov = converter.updateRecurrentMovEntity(recMov, input);
-			if(input.getRecurrentSt() == 0)
-				recMov.setActivityStatus(0);
 		} else if(recMov == null && input.getRecurrentSt() == 1) {
 			recMov = converter.MovEntityToRecurrent(movToUpdate);
 		}			
 		
-		try {
-			movToUpdate = PersistMovement(movToUpdate,recMov);
-		} catch(Exception e) {
-			log.error("[Service Layer] - updMovement - failure during persistence : " + e.getMessage());
-			throw new PersistenceInternalFailureException();
-		}
+		movToUpdate = PersistMovement(movToUpdate,recMov);
 		
-		return converter.castToMovementOutputDTO(movToUpdate);
+		return converter.castToMovementOutputDTO(movToUpdate,recMov.getActivityStatus());
 	}
 
 
@@ -177,18 +183,19 @@ public class MovementsServiceImpl implements MovemenstService{
 		return null;
 	}
 
-	//@Transactional(rollbackFor = {Throwable.class})
+	@Transactional(rollbackFor = {Throwable.class})
 	private MovementEntity PersistMovement(MovementEntity entity,RecurrentMovEntity rm) {
 		
 		try {
-			log.debug("[Service Layer] - PersistMovement - Saving Movement");
-			entity = entity.getMovementId() != null ? em.merge(entity) : repository.save(entity);
-		
+			
 			if(rm != null) {
 				log.debug("[Service Layer] - PersistMovement - Saving recurrent movement");
-				rm.setMovementId(entity.getMovementId());
 				rm = rm.getRecurrentMovId() != null ? em.merge(rm) : rmRepository.save(rm);
+				entity.setReplicationSource(rm.getRecurrentMovId());
 			}
+			
+			log.debug("[Service Layer] - PersistMovement - Saving Movement");
+			entity = entity.getMovementId() != null ? em.merge(entity) : repository.save(entity);
 			
 		} catch(Exception e) {
 			log.error("[Service Layer] - PersistMovement - failure during persistence : " + e.getMessage());
