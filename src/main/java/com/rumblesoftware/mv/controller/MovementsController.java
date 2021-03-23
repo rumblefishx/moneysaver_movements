@@ -151,5 +151,25 @@ public class MovementsController {
 		return ResponseEntity.status(httpStatus).body(response);
 	}
 	
+	
+	@RequestMapping(value = "/movement/{movId}/customer/{custId}",method=RequestMethod.DELETE)
+	public ResponseEntity<MovementResponse> delMovement(@PathVariable Long movId, @PathVariable Long custId ){
+		
+		MovementResponse response = new MovementResponse();
+		
+		log.debug("[Controller Layer] - del movement endpoint - calling service layer");
+		
+		try {			
+			response.setResponse(service.delMovement(custId, movId));
+		} catch(ValidationException exception) {
+			return getResponseAfterFailure(new MovementOutputDTO(),exception,HttpStatus.BAD_REQUEST);
+		} catch(PersistenceInternalFailureException|InternalValidationErrorException exception) {
+			return getResponseAfterFailure(new MovementOutputDTO(),exception,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		log.debug("[Controller Layer] - del movement endpoint - return result");
+		
+		return ResponseEntity.ok(response);		
+	}
 
 }

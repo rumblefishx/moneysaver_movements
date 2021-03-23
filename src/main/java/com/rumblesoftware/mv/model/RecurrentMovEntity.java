@@ -54,7 +54,7 @@ public class RecurrentMovEntity implements Serializable {
 	@Column(name = "movement_date")
 	private Date movementDate;
 
-	@Column(name = "movement_description",length = 15)
+	@Column(name = "movement_description",length = 120)
 	private String mDescription;
 
 	@Column(name = "creation_date")

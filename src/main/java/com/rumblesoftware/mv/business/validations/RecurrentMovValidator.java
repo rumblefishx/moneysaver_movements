@@ -23,6 +23,8 @@ public class RecurrentMovValidator {
 	private static final String DFT_MSG = "movement.rec.invalid.month";
 	private static final String REC_MV_PROPER_MV_TYPE_MSG = "movement.rec.wrong.mv.type";
 	
+	private static final String MV_DATE_MUST_BE_FILLED_MSG = "movement.date.required.when.recurrent.status.filled";
+	
 	
 	private static Logger log = LogManager.getLogger(RecurrentMovValidator.class);
 	
@@ -32,6 +34,9 @@ public class RecurrentMovValidator {
 		
 		if(recurrentCode == null || recurrentCode == 0)
 			return;		
+		
+		if(mvDate == null) 
+			throw new ValidationException(MV_DATE_MUST_BE_FILLED_MSG);
 		
 		if(isSameYearAndMonth(new Date(),mvDate) == false)		
 			throw new ValidationException(DFT_MSG);

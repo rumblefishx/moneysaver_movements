@@ -19,7 +19,7 @@ public interface MovementsRepository extends JpaRepository<MovementEntity, Movem
 			@Param(value = "custId") Long custId,
 			@Param(value = "movId") Long movId);
 	
-	@Query(value = "select m from TMovements m where m.categoryId = :catId and m.customerId = :custId and m.movementId = :movId")
+	@Query(value = "select m from TMovements m where m.customerId = :custId and m.movementId = :movId")
 	public Optional<MovementEntity> findEntityByCustAndMovId(
 			@Param(value = "custId") Long custId,
 			@Param(value = "movId") Long recurrentMovId);

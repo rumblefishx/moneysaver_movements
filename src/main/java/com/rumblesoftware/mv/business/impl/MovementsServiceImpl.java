@@ -4,6 +4,7 @@ import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.N
 import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.RecurrentMvnUpdatableCheck;
 import static com.rumblesoftware.mv.business.validations.RecurrentMovValidator.isRecurrentAnOutcomeMovement;
 
+import java.awt.print.Printable;
 import java.util.Date;
 import java.util.Optional;
 
@@ -36,7 +37,6 @@ import com.rumblesoftware.mv.repository.RecurrentMovementRepository;
 import com.rumblesoftware.mv.utils.DateUtils;
 
 @Service
-
 public class MovementsServiceImpl implements MovemenstService{
 
 	@Autowired
@@ -62,8 +62,9 @@ public class MovementsServiceImpl implements MovemenstService{
 	@Autowired
 	private DateUtils dtUtils;
 	
+	private static final String MSG_REC_CANNOT_BE_DELETED = "movement.recurrent.cannot.be.deleted";
+	
 	@Override
-	@Transactional
 	public MovementOutputDTO addMovement(MovementInputDTO input) {		
 		RecurrentMovEntity recMov = null;
 		
@@ -109,20 +110,60 @@ public class MovementsServiceImpl implements MovemenstService{
 		} catch(MovementNotFoundException e) {
 			throw e;
 		} catch(Exception e) {
+			log.error(e.getMessage());
 			throw new PersistenceInternalFailureException();
 		}
 		
 		return output;
 	}
 
+	@Override
+	public MovementOutputDTO delMovement(Long customerId,  Long movementID)
+			throws InternalValidationErrorException, ValidationException {	
+		
+		try {
+			deleteTransactionalFlow(customerId, movementID);
+		} catch(ValidationException e) {
+			throw e;
+		} catch(Exception e) {
+			throw new PersistenceInternalFailureException();
+		}
+			
+		
+		return null;
+	}
+
+	@Transactional
+	private void deleteTransactionalFlow(Long customerId, Long movementID) {
+		MovementEntity movToUpdate = null;
+		RecurrentMovEntity recMov = null;		
+		
+		movToUpdate =	
+				repository.findEntityByCustAndMovId(customerId,movementID).orElse(null);
+			
+			if(movToUpdate == null)
+				throw new MovementNotFoundException();
+				
+			if(movToUpdate.getReplicationSource() != null)
+				recMov = 
+						rmRepository.findByCustAndMovIds(
+						movToUpdate.getCustomerId(), 
+						movToUpdate.getReplicationSource()).orElse(null);	
+			
+			if(recMov != null)
+				throw new ValidationException(MSG_REC_CANNOT_BE_DELETED);
+			
+			repository.delete(movToUpdate);
+	}
+	
+	@Transactional(rollbackFor = {Throwable.class})
 	private MovementOutputDTO updatePersistenceTransactionalFlow(MovementPatchDTO input) {
 		MovementEntity movToUpdate = null;
 		RecurrentMovEntity recMov = null;
 				
 		// STEP 1 - Find movement to be updated
 		movToUpdate =	
-			repository.findEntityByLogicalIds(
-					input.getCategoryId(), 
+			repository.findEntityByCustAndMovId(
 					input.getCustomerId(), 
 					input.getMovementId()).orElse(null);
 		
@@ -154,14 +195,10 @@ public class MovementsServiceImpl implements MovemenstService{
 
 
 	@Override
-	public MovementOutputDTO delMovement(Long customerId,  Long MovementId)
-			throws InternalValidationErrorException, ValidationException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public MovementOutputDTO findMovement(Long customerId, Long MovementId) {
+		
+		RecurrentMovEntity recMov = null;
+		Integer recurrentSt = 0;
 		
 		log.debug("[Service Layer] - Searching data...");
 		
@@ -173,7 +210,16 @@ public class MovementsServiceImpl implements MovemenstService{
 			throw new DataNotFoundException();
 		}
 		
-		return converter.castToMovementOutputDTO(result.get());
+		if(result.get().getReplicationSource() != null) 
+			recMov = 
+					rmRepository.findByCustAndMovIds(
+						result.get().getCustomerId(), 
+						result.get().getReplicationSource()).orElse(null);		
+		
+		if(recMov != null)
+			recurrentSt = 1;
+			
+		return converter.castToMovementOutputDTO(result.get(),recurrentSt);
 	}
 
 	@Override
@@ -182,6 +228,7 @@ public class MovementsServiceImpl implements MovemenstService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 	@Transactional(rollbackFor = {Throwable.class})
 	private MovementEntity PersistMovement(MovementEntity entity,RecurrentMovEntity rm) {

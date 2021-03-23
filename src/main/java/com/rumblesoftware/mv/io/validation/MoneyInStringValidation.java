@@ -18,6 +18,9 @@ public class MoneyInStringValidation implements ConstraintValidator<MoneyInStrin
 
 		BigDecimal val = null;
 		
+		if(value == null)
+			return true;
+		
 		try {
 			val = new BigDecimal(value.trim());
 		} catch(Exception e) {

@@ -21,18 +21,15 @@ public class MovementPatchDTO implements Serializable{
 	@NotNull(message="{movement.input.customer.id.null}")
 	private Long customerId;
 	
-	@NotNull(message="{movement.input.category.id.null}")
 	private Long categoryId;
 	
 	@NotNull(message="{movement.input.movement.id.null}")
 	private Long movementId;
 
 	@MoneyInStringVal(decimals = 2)
-	@NotBlank(message="{movement.input.amount.empty}")
 	private String mAmount;
 	
 	@ValidDate
-	@NotBlank(message="{movement.input.date.empty}")
 	private String mDate;
 	
 	@Max(value = 1,message="{movement.input.recurrent.invalid.value}")
@@ -49,7 +46,6 @@ public class MovementPatchDTO implements Serializable{
 	private Integer mType;
 	
 	@Length(min = 5,max=120,message="{movement.input.description.range}")
-	@NotBlank(message="{movement.input.description.empty}")
 	private String mDescription;
 
 	public Long getCustomerId() {

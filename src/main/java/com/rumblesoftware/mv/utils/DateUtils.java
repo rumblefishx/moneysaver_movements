@@ -41,6 +41,9 @@ public class DateUtils {
 		
 		DateFormat df = new SimpleDateFormat(datePattern);
 		
+		if(dateStr == null)
+			return null;
+		
 		try {			
 			dt = df.parse(dateStr);
 		} catch (ParseException e) {
