@@ -44,6 +44,9 @@ public class MovementEntity implements Serializable {
 	
 	@Column(name= "replication_source")
 	private Long replicationSource;
+	
+	@Column(insertable = false, updatable = false)
+	private Boolean isRecurrent;
 
 	@NotNull
 	@Column(name = "amount")
